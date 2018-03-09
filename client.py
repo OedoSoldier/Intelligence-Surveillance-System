@@ -4,8 +4,8 @@ import struct
 import cv2
 import numpy as np
 
-# Start a socket listening for connections on 0.0.0.0:8000 (0.0.0.0 means
-# all interfaces)
+# Connect a client socket to my_server:8000 (change my_server to the
+# hostname of your server)
 client_socket = socket.socket()
 client_socket.connect(('10.0.0.214', 8000))
 
