@@ -14,14 +14,15 @@ cam_tilt = 90
 
 pan(cam_pan-90)
 tilt(cam_tilt-90)
-light_mode(WS2812)
 
+'''
+light_mode(WS2812)
 def lights(r,g,b,w):
     for x in range(18):
         set_pixel_rgbw(x,r if x in [3,4] else 0,g if x in [3,4] else 0,b,w if x in [0,1,6,7] else 0)
     show()
-
 lights(0,0,0,50)
+'''
 
 min_size = (15, 15)
 image_scale = 5
@@ -36,13 +37,13 @@ print('Waiting connection...')
 
 # Connect a client socket to my_server:8000 (change my_server to the
 # hostname of your server)
-client_socket = socket.socket()
-client_socket.bind(('0.0.0.0', 8000))
-client_socket.listen(1)
+server_socket = socket.socket()
+server_socket.bind(('0.0.0.0', 8000))
+server_socket.listen(1)
 
 while True:
     # Make a file-like object out of the connection
-    (connection, (ip, port)) = client_socket.accept() # connection = client_socket.makefile('wb')
+    (connection, (ip, port)) = server_socket.accept()
     print('Connnection from {}:{} detected!'.format(ip, port))
     try:
         # Start a preview and let the camera warm up for 2 seconds
@@ -85,7 +86,7 @@ while True:
                                              haar_scale, min_neighbors, haar_flags, min_size)
                 t = cv.GetTickCount() - t
                 if faces:
-                    lights(50 if len(faces) == 0 else 0, 50 if len(faces) > 0 else 0,0,50)
+                    # lights(50 if len(faces) == 0 else 0, 50 if len(faces) > 0 else 0,0,50)
 
                     for ((x, y, w, h), n) in faces:
                         # the input to cv.HaarDetectObjects was resized, so scale the
@@ -136,5 +137,6 @@ while True:
     finally:
         connection.close()
         print('Waiting connection...')
-client_socket.close()
+
+server_socket.close()
 

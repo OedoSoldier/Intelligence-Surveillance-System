@@ -6,11 +6,11 @@ import numpy as np
 
 # Start a socket listening for connections on 0.0.0.0:8000 (0.0.0.0 means
 # all interfaces)
-server_socket = socket.socket()
-server_socket.connect(('10.0.0.214', 8000))
+client_socket = socket.socket()
+client_socket.connect(('10.0.0.214', 8000))
 
 # Accept a single connection and make a file-like object out of it
-connection = server_socket.makefile('rb')
+connection = client_socket.makefile('rb')
 try:
     while True:
         # Read the length of the image as a 32-bit unsigned int. If the
@@ -35,5 +35,5 @@ except Exception as e:
     print(e)
 finally:
     connection.close()
-    server_socket.close()
+    client_socket.close()
     cv2.destroyAllWindows()
