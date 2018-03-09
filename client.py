@@ -4,6 +4,8 @@ import struct
 import cv2
 import numpy as np
 
+print('Initializing...')
+
 # Connect a client socket to my_server:8000 (change my_server to the
 # hostname of your server)
 client_socket = socket.socket()
@@ -18,8 +20,8 @@ try:
         image_len = struct.unpack(
             '<L', connection.read(
                 struct.calcsize('<L')))[0]
-        print(image_len)
         if not image_len:
+            print('Image length error')
             break
         # Construct a stream to hold the image data and read the image
         # data from the connection
@@ -30,7 +32,7 @@ try:
         image_stream.seek(0)
         image = np.fromstring(image_stream.getvalue(), dtype=np.uint8)
         image = cv2.imdecode(image, cv2.IMREAD_COLOR)
-        cv2.imshow('test', image)
+        cv2.imshow('Capture', image)
         if cv2.waitKey(1) & 0xFF == ord('q'):
             break
 except Exception as e:

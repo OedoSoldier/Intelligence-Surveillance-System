@@ -50,9 +50,9 @@ server_socket.listen(1)
 while True:
     # Make a file-like object out of the connection
     (connection, (ip, port)) = server_socket.accept()
-    print('Connnection from {}:{} detected!'.format(ip, port))
+    print('Connnect from {}:{}'.format(ip, port))
     try:
-        # Start a preview and let the camera warm up for 2 seconds
+        # Camera warm up for 2 seconds
         time.sleep(2)
 
         # Note the start time and construct a stream to hold image data
