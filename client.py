@@ -15,7 +15,9 @@ try:
     while True:
         # Read the length of the image as a 32-bit unsigned int. If the
         # length is zero, quit the loop
-        image_len = struct.unpack('<L', connection.read(struct.calcsize('<L')))[0]
+        image_len = struct.unpack(
+            '<L', connection.read(
+                struct.calcsize('<L')))[0]
         print(image_len)
         if not image_len:
             break
