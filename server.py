@@ -62,7 +62,7 @@ while True:
         while True:
             frame = cv.QueryFrame(camera)
             if not frame:
-                cv.WaitKey(0)
+                print('Camera error')
                 break
             if not frame_copy:
                 frame_copy = cv.CreateImage((frame.width, frame.height),
