@@ -39,18 +39,16 @@ haar_flags = cv.CV_HAAR_DO_CANNY_PRUNING
 if camera:
     frame_copy = None
 
-print('Waiting connection...')
-
 # Start a socket listening for connections on 0.0.0.0:8000 (0.0.0.0 means
 # all interfaces)
-server_socket = socket.socket()
-server_socket.bind(('0.0.0.0', 8000))
-server_socket.listen(1)
-
 while True:
+    print('Connecting...')
+    
+    client_socket = socket.socket()
+    client_socket.connect(('10.0.0.130', 8000))
+
     # Make a file-like object out of the connection
-    (connection, (ip, port)) = server_socket.accept()
-    print('Connnect from {}:{}'.format(ip, port))
+    connection = client_socket.makefile('wb')
     try:
         # Camera warm up for 2 seconds
         time.sleep(2)
@@ -155,18 +153,17 @@ while True:
             stream = io.BytesIO(image)
             # Write the length of the capture to the stream and flush to
             # ensure it actually gets sent
-            connection.sendall(struct.pack('<L', len(image)))
+            connection.write(struct.pack('<L', len(image)))
+            connection.flush()
             # Send the image data over the wire
-            connection.sendall(stream.read())
+            connection.write(stream.read())
             # Reset the stream for the next capture
             stream.seek(0)
             stream.truncate()
         # Write a length of zero to the stream to signal we're done
-        # connection.sendall(struct.pack('<L', 0))
+        connection.sendall(struct.pack('<L', 0))
     except Exception as e:
-        print(e)
+        print('{}, disconnected'.format(e))
     finally:
-        connection.close()
-        print('Waiting connection...')
-
-server_socket.close()
+        # connection.close()
+        client_socket.close()
