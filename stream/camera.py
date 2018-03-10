@@ -5,14 +5,17 @@ import cv2
 import numpy as np
 
 class VideoCamera(object):
-    def __init__(self, server_socket):
+    def __init__(self):
         # Start a socket listening for connections on 0.0.0.0:8000 (0.0.0.0 means
         # all interfaces)
+        self.client_socket = socket.socket()
+        self.client_socket.connect(('10.0.0.214', 8000))
         # Accept a single connection and make a file-like object out of it
-        self.connection = server_socket.accept()[0].makefile('rb')
+        self.connection = self.client_socket.makefile('rb')
     
     def __del__(self):
         self.connection.close()
+        self.client_socket.close()
     
     def get_frame(self):
         image_len = struct.unpack('<L', self.connection.read(struct.calcsize('<L')))[0]
