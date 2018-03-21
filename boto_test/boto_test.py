@@ -30,46 +30,56 @@ def compare_faces(
 
 
 if __name__ == '__main__':
-    BUCKET = 'ec500j1-project-iseeu'
-    KEY_SOURCE = 'test.jpg'
-    KEY_TARGET = 'target.jpg'
+    bucket_name = 'ec500j1-project-iseeu'
+    source_name = ['source_1.jpg', 'source_2.jpg']
+    target_name = 'target.jpg'
 
     image = cv2.imread('target.jpg')
-    height, width, channels = image.shape 
+    height, width, channels = image.shape
 
     s3 = boto3.client('s3')
-    s3.upload_file(KEY_SOURCE, BUCKET, KEY_SOURCE)
-    s3.upload_file(KEY_TARGET, BUCKET, KEY_TARGET)
+    for img in source_name:
+        s3.upload_file(img, bucket_name, img)
+    s3.upload_file(target_name, bucket_name, target_name)
     while True:
         try:
-            boto3.resource('s3').Object(BUCKET, KEY_SOURCE).load()
-            boto3.resource('s3').Object(BUCKET, KEY_TARGET).load()
+            for img in source_name:
+                boto3.resource('s3').Object(bucket_name, img).load()
+            boto3.resource('s3').Object(bucket_name, target_name).load()
         except BaseException:
             continue
         break
 
-    source_face, matches = compare_faces(
-        BUCKET, KEY_SOURCE, BUCKET, KEY_TARGET)
+    sources, matches = {}, {}
+    for img in source_name:
+        sources[img], matches[img] = compare_faces(
+            bucket_name, img, bucket_name, target_name)
 
-    # the main source face
-    print('Source Face ({Confidence}%)'.format(**source_face))
+    for img in list(matches.keys()):
+        for faceMatch in matches[img]:
+            position = faceMatch['Face']['BoundingBox']
+            x = int(position['Left'] * width)
+            y = int(position['Top'] * height)
+            w = int(position['Width'] * width)
+            h = int(position['Height'] * height)
+            cv2.rectangle(image, (x, y), (x + w, y + h), (0, 255, 0), 2)
+            cv2.putText(
+                image,
+                '{}: {:.2f}%'.format(
+                    img,
+                    faceMatch['Face']['Confidence']),
+                (x,
+                 y),
+                cv2.FONT_HERSHEY_PLAIN,
+                1.5,
+                (0,
+                 255,
+                 0),
+                2)
 
-    # one match for each target face
-    for match in matches:
-        print('Target Face ({Confidence}%)'.format(**match['Face']))
-        print('  Similarity : {}%'.format(match['Similarity']))
-
-    for faceMatch in matches:
-        position = faceMatch['Face']['BoundingBox']
-        x = int(position['Left'] * width)
-        y = int(position['Top'] * height)
-        w = int(position['Width'] * width)
-        h = int(position['Height'] * height)
-        cv2.rectangle(image, (x, y), (x+w, y+h), (0, 255, 0), 2)
-        cv2.putText(image, str(faceMatch['Face']['Confidence']), (x, y), cv2.FONT_HERSHEY_PLAIN, 1.5, (0, 255, 0), 2)
-
-    s3.delete_object(Bucket=BUCKET, Key=KEY_SOURCE)
-    s3.delete_object(Bucket=BUCKET, Key=KEY_TARGET)
+    for img in source_name:
+        s3.delete_object(Bucket=bucket_name, Key=img)
+    s3.delete_object(Bucket=bucket_name, Key=target_name)
 
     cv2.imshow('Output', image)
     cv2.waitKey(0)
