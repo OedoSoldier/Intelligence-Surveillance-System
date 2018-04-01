@@ -3,8 +3,8 @@ import smtplib
 server = smtplib.SMTP('smtp.gmail.com', 587)
 server.ehlo()
 server.starttls()
-server.login("wenganq11@gmail.com", "Realme320!")
+server.login("youremailaccount", "password")
  
 msg = "YOUR MESSAGE!"
-server.sendmail("wenganq11@gmail.com", "wengq@bu.edu", msg)
+server.sendmail("youremailaccount", "receiveraddress", msg)
 server.quit()
