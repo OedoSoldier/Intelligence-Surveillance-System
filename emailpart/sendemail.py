@@ -45,13 +45,3 @@ if __name__ == '__main__':
 
 
 # it will take about 17s to send the picture to the user through email
-=======
-server = smtplib.SMTP('smtp.gmail.com', 587)
-server.ehlo()
-server.starttls()
-server.login("youremailaccount", "password")
- 
-msg = "YOUR MESSAGE!"
-server.sendmail("youremailaccount", "receiveraddress", msg)
-server.quit()
->>>>>>> 2915d590050c2d74ca012c7278688be83a2a25cf
