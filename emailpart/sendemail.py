@@ -10,7 +10,7 @@ def sendMail(body, image):
 	server = smtplib.SMTP('smtp.gmail.com', 587)
 	server.ehlo()
 	server.starttls()
-	server.login("wenganq11@gmail.com", "EC500J1!")
+	server.login("wenganq11@gmail.com", "password")
  
 <<<<<<< HEAD
 	msg = MIMEMultipart()
