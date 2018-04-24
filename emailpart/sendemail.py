@@ -1,38 +1,34 @@
-## Copyright 2018 Ganquan Wen  wengq@bu.edu
-import smtplib
+"""
+Shows basic usage of the Gmail API.
+
+Lists the user's Gmail labels.
+"""
+import base64
+from email.mime.audio import MIMEAudio
+from email.mime.base import MIMEBase
 from email.mime.image import MIMEImage
-from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
+import mimetypes
+import os
+#from __future__ import print_function
+from httplib2 import Http
+import os
+
 from time import gmtime, strftime
 from oauth2client.service_account import ServiceAccountCredentials
 import gspread
 
-pic = 'guldan.jpg'  # the pic took by camera
-# trying to use imap
-def sendMail(body, image):
-	server = smtplib.SMTP('smtp.gmail.com', 587)
-	server.ehlo()
-	server.starttls()
-	server.login("wenganq11@gmail.com", "password")
- 
-	msg = MIMEMultipart()
-	msg["To"] = "wengq@bu.edu"
-	msg["From"] = "wenganq11@gmail.com"
-	msg["Subject"] = 'Alert from ISeeU'
+from apiclient import discovery
+import oauth2client
+from oauth2client import client
+from oauth2client import tools
+from oauth2client import file
+from apiclient.discovery import build
 
-	msg.attach(MIMEText(body, 'html', 'utf-8'))   # Added, and edited the previous line
+from apiclient import errors
 
-	with open(image, 'rb') as f:
-		msgImage = MIMEImage(f.read(), _subtype="jpeg")
-
-	msgImage.add_header('Pic_ID', '<image1>')
-	msg.attach(msgImage)
-
-
-
-	server.sendmail("wenganq11@gmail.com", "wengq@bu.edu", msg.as_string())
-	server.quit()
-
+# Setup the Gmail API
 
 def upload_log(text):
 	scope=['https://spreadsheets.google.com/feeds']
@@ -41,19 +37,58 @@ def upload_log(text):
 	wks=gc.open('ISeeU_Log').sheet1
 	wks.append_row([text])
 
+
+def SendMessage(service, user_id, message):
+	#user_id: User's email address. The special value "me" can be used to indicate the authenticated user.
+	try:
+		message = (service.users().messages().send(userId=user_id, body=message).execute())
+		print ('Message Id: %s' % message['id'])
+		return message
+	except errors.HttpError, error:
+		print ('An error occurred: %s' % error)
+
+
+def create_message_with_attachment(sender, to, subject, message_text, file):
+	message = MIMEMultipart()
+	message['to'] = to
+	message['from'] = sender
+	message['subject'] = subject
+
+	msg = MIMEText(message_text)
+	message.attach(msg)
+
+	fp = open(file, 'rb')
+	msg = MIMEImage(fp.read(), _subtype='jpeg')
+	fp.close()
+	
+	filename = os.path.basename(file)
+	msg.add_header('Content-Disposition', 'attachment', filename=filename)
+	message.attach(msg)
+
+	return {'raw': base64.urlsafe_b64encode(message.as_string())}
+
 def main():
-	# stranger is a flag to indicate the result of face recognition
-	stranger = 1
-	if stranger == 1:
-		print ('Alert sent!')
-		nowtime = strftime("%Y-%m-%d %H:%M:%S", gmtime())
-		text = 'Alert at ' + nowtime
-		sendMail(text, pic)
-		upload_log(text)
+
+	SCOPES = 'https://mail.google.com'
+	store = file.Storage('credentials.json')
+	creds = store.get()
+	if not creds or creds.invalid:
+		flow = client.flow_from_clientsecrets('client_secret.json', SCOPES)
+		creds = tools.run_flow(flow, store)
+	service = discovery.build('gmail', 'v1', http=creds.authorize(Http()))
+	
+	nowtime = strftime("%Y-%m-%d %H:%M:%S", gmtime())
+	text = 'Alert at ' + nowtime
+	upload_log(text)
+	pic = 'guldan.jpg'
+	sender = "wenganq11@gmail.com"
+	to = "wengq@bu.edu"
+	subject = "Gmail API"
+	message = create_message_with_attachment(sender, to, subject, text, pic)
+	SendMessage(service, 'me', message)
 
 
 if __name__ == '__main__':
 	main()
 
 
-# it will take about 17s to send the picture to the user through email
