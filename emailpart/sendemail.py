@@ -1,36 +1,25 @@
-"""
-Shows basic usage of the Gmail API.
-
-Lists the user's Gmail labels.
-"""
 import base64
-from email.mime.audio import MIMEAudio
 from email.mime.base import MIMEBase
 from email.mime.image import MIMEImage
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
-import mimetypes
 import os
-#from __future__ import print_function
 from httplib2 import Http
-import os
-
-from time import gmtime, strftime
+from time import localtime, strftime, time, sleep
 from oauth2client.service_account import ServiceAccountCredentials
 import gspread
-
 from apiclient import discovery
-import oauth2client
 from oauth2client import client
 from oauth2client import tools
 from oauth2client import file
 from apiclient.discovery import build
-
 from apiclient import errors
 
-# Setup the Gmail API
 
 def upload_log(text):
+	'''
+	Upload the Alert time to the google drive sheet
+	'''
 	scope=['https://spreadsheets.google.com/feeds']
 	credentials=ServiceAccountCredentials.from_json_keyfile_name('ProjectLog-41cafcffcf13.json', scope)
 	gc=gspread.authorize(credentials)
@@ -39,7 +28,9 @@ def upload_log(text):
 
 
 def SendMessage(service, user_id, message):
-	#user_id: User's email address. The special value "me" can be used to indicate the authenticated user.
+	'''
+	send the mime email package
+	'''
 	try:
 		message = (service.users().messages().send(userId=user_id, body=message).execute())
 		print ('Message Id: %s' % message['id'])
@@ -49,6 +40,10 @@ def SendMessage(service, user_id, message):
 
 
 def create_message_with_attachment(sender, to, subject, message_text, file):
+	'''
+	Create the email
+	Included information: Sender, Receiver, Subject, Text, Attached Image
+	'''
 	message = MIMEMultipart()
 	message['to'] = to
 	message['from'] = sender

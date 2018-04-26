@@ -6,23 +6,24 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 import mimetypes
 import os
-#from __future__ import print_function
 from httplib2 import Http
 import os
 import email
-
 from apiclient import discovery
 import oauth2client
 from oauth2client import client
 from oauth2client import tools
 from oauth2client import file
 from apiclient.discovery import build
-
 from apiclient import errors
 
-from apiclient import errors
 
-def show_chatty_threads(service, target, user_id='me'):
+def show_chatty_threads(service, target, trigcode, user_id='me'):
+    '''
+    Check all the email one by one in time order
+    If the subject match, check if the trigcode match.
+    If the trigcode match too, return True to set off alarm.
+    '''
     threads = service.users().threads().list(userId=user_id).execute().get('threads', [])
     for thread in threads:
         tdata = service.users().threads().get(userId=user_id, id=thread['id']).execute()
@@ -38,25 +39,27 @@ def show_chatty_threads(service, target, user_id='me'):
             print('- %s (%d msgs)' % (subject, nmsgs))
             #if subject == 'Your password changed':
             if subject == target:
-                return thread, thread['id']
+                if thread[u'snippet'][0:8] == trigcode:
+                    return True
+                else:
+                    return thread[u'snippet'][0:8]
 
 
 def main():
 
-  SCOPES = 'https://mail.google.com'
-  store = file.Storage('credentials.json')
-  creds = store.get()
-  if not creds or creds.invalid:
-    flow = client.flow_from_clientsecrets('client_secret.json', SCOPES)
-    creds = tools.run_flow(flow, store)
-  service = discovery.build('gmail', 'v1', http=creds.authorize(Http()))
+    SCOPES = 'https://mail.google.com'
+    store = file.Storage('credentials.json')
+    creds = store.get()
+    if not creds or creds.invalid:
+        flow = client.flow_from_clientsecrets('client_secret.json', SCOPES)
+        creds = tools.run_flow(flow, store)
+    service = discovery.build('gmail', 'v1', http=creds.authorize(Http()))
 
 
-  target = 'alarm'
-  threads, tid = show_chatty_threads(service, target, user_id='me')
-  print threads[u'snippet']
-  print tid
+    target = 'Alert from ISeeU!'
+    trigcode = '467382'
+    print show_chatty_threads(service, target, trigcode, user_id='me')
 
 
 if __name__ == '__main__':
-	main()
+    main()
