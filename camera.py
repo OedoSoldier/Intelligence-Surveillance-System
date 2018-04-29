@@ -120,7 +120,7 @@ class VideoCamera(object):
                         self.cam_pan = max(0, min(180, self.cam_pan))
                         self.cam_tilt = max(0, min(180, self.cam_tilt))
 
-                        # Pan and tilt to the nex position
+                        # Pan and tilt to the next position
                         pan(int(self.cam_pan - 90))
                         tilt(int(self.cam_tilt - 90))
                         
