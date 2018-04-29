@@ -1,0 +1,8 @@
+awscli==1.14.59
+boto3==1.7.10
+email==4.0.3
+Flask==0.12.2
+google-api-python-client==1.6.7
+numpy==1.14.1
+opencv-python==2.4.9.1
+pantilthat==0.0.5
