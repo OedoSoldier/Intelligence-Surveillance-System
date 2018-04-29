@@ -101,6 +101,7 @@ class VideoCamera(object):
                         cv.Rectangle(
                             frame, pt1, pt2, cv.RGB(
                                 100, 220, 255), 1, 8, 0)
+                        
                         # Calculate mid point of the face
                         x1, y1 = pt1
                         x2, y2 = pt2
