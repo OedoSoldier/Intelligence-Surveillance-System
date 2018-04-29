@@ -120,18 +120,6 @@ class VideoCamera(object):
                         self.cam_pan = max(0, min(180, self.cam_pan))
                         self.cam_tilt = max(0, min(180, self.cam_tilt))
 
-                        # Use for debug
-                        '''
-                        print(
-                            offsetX,
-                            offsetY,
-                            midFace,
-                            self.cam_pan,
-                            self.cam_tilt,
-                            frame.width,
-                            frame.height)
-                        '''
-
                         # Pan and tilt to the nex position
                         pan(int(self.cam_pan - 90))
                         tilt(int(self.cam_tilt - 90))

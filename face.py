@@ -28,7 +28,7 @@ def compare_faces(
         threshold=80,
         region='us-east-1'):
     '''
-    Require for face comparsion
+    Require for face comparision
     '''
     rekognition = boto3.client('rekognition', region)
     response = rekognition.compare_faces(
