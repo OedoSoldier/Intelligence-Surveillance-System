@@ -41,13 +41,13 @@ $ sudo pip install pantilthat
 
 # Reference
 
-* OpenCV(https://docs.opencv.org/2.4.9/)
-* Flask(http://flask.pocoo.org/ )
-* awscli(https://aws.amazon.com/cli )
-* boto3(https://boto3.readthedocs.io/en/latest/ )
-* Pantilthat(https://github.com/pimoroni/pantilt-hat )
-* Gmail API(https://developers.google.com/gmail/api/quickstart/python)
-* MIME(https://docs.python.org/2/library/email-examples.html)
+* [OpenCV](https://docs.opencv.org/2.4.9/)
+* [Flask](http://flask.pocoo.org/ )
+* [awscli](https://aws.amazon.com/cli )
+* [boto3](https://boto3.readthedocs.io/en/latest/ )
+* [Pantilthat](https://github.com/pimoroni/pantilt-hat )
+* [Gmail API](https://developers.google.com/gmail/api/quickstart/python)
+* [MIME](https://docs.python.org/2/library/email-examples.html)
 
 
 
