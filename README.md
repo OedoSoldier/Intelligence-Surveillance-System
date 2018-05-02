@@ -31,7 +31,8 @@ $ sudo pip install boto3
 
 awscli
 ```
-$ sudo pip install awscli (configuration needed)
+$ sudo pip install awscli
+$ aws configure
 ```
 
 pantilthat
